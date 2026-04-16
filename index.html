@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jawad Hussain — BI & Reporting Analyst</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080b12;--bg2:#0c1018;--bg3:#10151f;--card:#0f1420;--card2:#131929;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);
+  --accent:#00e5c0;--accent2:#00b89a;
+  --accent-dim:rgba(0,229,192,0.08);--accent-dim2:rgba(0,229,192,0.15);
+  --text:#e8edf5;--text2:#8b95a8;--text3:#4f5a6e;
+  --font-head:'Syne',sans-serif;--font-body:'DM Sans',sans-serif;
+}
+html{scroll-behavior:auto}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.7;overflow-x:hidden;overflow-y:scroll}
+
+/* PROGRESS BAR */
+.progress-bar{position:fixed;top:0;left:0;height:2px;width:0%;background:linear-gradient(90deg,var(--accent2),var(--accent));z-index:300;transition:width 0.1s linear;border-radius:0 2px 2px 0}
+
+/* SCROLL HINT */
+.scroll-hint{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:0.3rem;opacity:1;transition:opacity 0.6s ease;pointer-events:none}
+.scroll-hint.hidden{opacity:0}
+.scroll-hint span{font-size:0.65rem;color:var(--text3);letter-spacing:0.12em;text-transform:uppercase}
+.scroll-hint-arrow{width:20px;height:20px;border-right:1.5px solid var(--accent);border-bottom:1.5px solid var(--accent);transform:rotate(45deg);animation:bounceDown 1.5s ease infinite}
+@keyframes bounceDown{0%,100%{transform:rotate(45deg) translateY(0)}50%{transform:rotate(45deg) translateY(4px)}}
+
+/* DOT NAV + COUNTER */
+.dot-nav{position:fixed;right:1.75rem;top:50%;transform:translateY(-50%);z-index:200;display:flex;flex-direction:column;align-items:center;gap:0.65rem}
+.dot-nav-item{width:7px;height:7px;border-radius:50%;border:1.5px solid rgba(0,229,192,0.35);background:transparent;cursor:pointer;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);padding:0;position:relative}
+.dot-nav-item::after{content:attr(data-label);position:absolute;right:1.4rem;top:50%;transform:translateY(-50%);font-size:0.68rem;color:var(--accent);white-space:nowrap;opacity:0;transition:opacity 0.2s;font-family:var(--font-body);letter-spacing:0.04em;pointer-events:none}
+.dot-nav-item.active{background:var(--accent);border-color:var(--accent);transform:scale(1.5)}
+.dot-nav-item:hover{border-color:var(--accent);background:rgba(0,229,192,0.25)}
+.dot-nav-item:hover::after{opacity:1}
+.section-counter{font-family:var(--font-head);font-size:0.7rem;color:var(--text3);letter-spacing:0.08em;margin-top:0.5rem;text-align:center}
+.section-counter span{color:var(--accent)}
+
+/* TRANSITION OVERLAY */
+.transition-overlay{position:fixed;inset:0;background:var(--bg);z-index:250;opacity:0;pointer-events:none;transition:opacity 0.25s ease}
+.transition-overlay.flash{opacity:0.35}
+
+/* SECTION SNAP */
+.snap-section{scroll-snap-align:start;min-height:100vh}
+.free-section{min-height:100vh}
+
+/* CONTENT REVEAL — enter from below, exit upward */
+.fade-in{opacity:0;transform:translateY(28px);transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1),transform 0.7s cubic-bezier(0.16,1,0.3,1)}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+.fade-in.exit{opacity:0;transform:translateY(-16px);transition:opacity 0.4s ease,transform 0.4s ease}
+
+@media(max-width:768px){
+  .dot-nav{display:none}
+  .scroll-hint{display:none}
+}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 2rem;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(8,11,18,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:var(--font-head);font-weight:800;font-size:1.1rem;color:var(--accent);letter-spacing:0.02em}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:0.875rem;transition:color 0.2s}
+.nav-links a:hover{color:var(--accent)}
+.nav-cta{background:var(--accent-dim2);color:var(--accent);border:1px solid rgba(0,229,192,0.3);padding:0.4rem 1rem;border-radius:6px;font-size:0.875rem;text-decoration:none;transition:all 0.2s}
+.nav-cta:hover{background:var(--accent);color:var(--bg)}
+.nav-mobile-menu{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.nav-mobile-menu span{width:22px;height:2px;background:var(--text2);border-radius:2px;transition:all 0.3s}
+.mobile-nav{display:none;position:fixed;top:64px;left:0;right:0;background:rgba(8,11,18,0.97);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:1.25rem 2rem;z-index:99;flex-direction:column;gap:1rem}
+.mobile-nav a{color:var(--text2);text-decoration:none;font-size:1rem;padding:0.5rem 0;border-bottom:1px solid var(--border)}
+.mobile-nav a:last-child{border-bottom:none;color:var(--accent)}
+.mobile-nav.open{display:flex}
+
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:120px 2rem 80px;position:relative;overflow:hidden;text-align:center}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,192,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,192,0.025) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%)}
+.hero-glow{position:absolute;top:20%;left:50%;transform:translateX(-50%);width:700px;height:400px;background:radial-gradient(ellipse,rgba(0,229,192,0.05) 0%,transparent 70%);pointer-events:none}
+.hero-inner{max-width:700px;margin:0 auto;position:relative;display:flex;flex-direction:column;align-items:center}
+.profile-image-wrap{width:140px;height:140px;border-radius:50%;border:2px solid rgba(0,229,192,0.4);padding:3px;margin-bottom:1.75rem;position:relative;cursor:pointer}
+.profile-image-wrap:hover .profile-upload-hint{opacity:1}
+.profile-img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.profile-placeholder{width:100%;height:100%;border-radius:50%;background:var(--card);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.3rem;border:1px dashed rgba(0,229,192,0.3)}
+.profile-placeholder svg{width:24px;height:24px;color:var(--accent);opacity:0.6}
+.profile-placeholder span{font-size:0.65rem;color:var(--text3);text-align:center;line-height:1.3;padding:0 8px}
+.profile-upload-hint{position:absolute;inset:0;border-radius:50%;background:rgba(0,229,192,0.15);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s}
+.profile-upload-hint span{font-size:0.65rem;color:var(--accent);font-weight:500}
+.hero-badge{display:inline-flex;align-items:center;gap:0.5rem;background:var(--accent-dim);border:1px solid rgba(0,229,192,0.2);color:var(--accent);font-size:0.78rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;padding:0.35rem 0.9rem;border-radius:100px;margin-bottom:1.75rem}
+.hero-badge::before{content:'';width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+h1{font-family:var(--font-head);font-size:clamp(1.5rem,4vw,3rem);font-weight:800;line-height:1.1;letter-spacing:-0.02em;margin-bottom:1.25rem}
+.h1-name{display:block;color:var(--text)}
+.h1-role{display:block;color:var(--accent)}
+.hero-sub{font-size:1.05rem;color:var(--text2);max-width:520px;line-height:1.8;margin-bottom:2.5rem;font-weight:300}
+.hero-actions{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:3.5rem;justify-content:center}
+.btn-primary{background:var(--accent);color:var(--bg);padding:0.75rem 1.75rem;border-radius:8px;text-decoration:none;font-weight:700;font-size:0.9rem;font-family:var(--font-head);transition:all 0.2s}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-secondary{background:transparent;color:var(--text);padding:0.75rem 1.75rem;border-radius:8px;text-decoration:none;font-size:0.9rem;border:1px solid var(--border2);transition:all 0.2s}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
+.hero-stats{display:flex;gap:2.5rem;flex-wrap:wrap;justify-content:center}
+.stat-num{font-family:var(--font-head);font-size:1.8rem;font-weight:800;color:var(--accent);line-height:1}
+.stat-label{font-size:0.75rem;color:var(--text3);margin-top:0.25rem;text-transform:uppercase;letter-spacing:0.06em}
+
+section{padding:100px 2rem}
+.section-inner{max-width:900px;margin:0 auto}
+.section-label{font-size:0.72rem;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);margin-bottom:0.6rem;text-align:center}
+.section-title{font-family:var(--font-head);font-size:clamp(1.8rem,4vw,2.6rem);font-weight:800;line-height:1.1;letter-spacing:-0.01em;margin-bottom:0.85rem;text-align:center}
+.section-sub{color:var(--text2);font-size:0.95rem;max-width:520px;line-height:1.8;margin-bottom:2.75rem;font-weight:300;text-align:center;margin-left:auto;margin-right:auto}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent)}
+
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+.about-intro{color:var(--text2);line-height:1.85;font-weight:300;font-size:0.95rem;margin-bottom:1.5rem}
+.about-intro strong{color:var(--text);font-weight:500}
+.about-facts{display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.75rem}
+.about-fact{display:flex;align-items:center;gap:0.75rem;font-size:0.88rem;color:var(--text2)}
+.about-fact-dot{width:5px;height:5px;background:var(--accent);border-radius:50%;flex-shrink:0}
+.about-links{display:flex;gap:0.75rem;flex-wrap:wrap}
+.about-link{display:inline-flex;align-items:center;gap:0.4rem;color:var(--text2);text-decoration:none;font-size:0.82rem;border:1px solid var(--border);padding:0.4rem 0.85rem;border-radius:6px;transition:all 0.2s}
+.about-link:hover{border-color:var(--accent);color:var(--accent)}
+.about-link svg{width:13px;height:13px}
+.skills-block{display:flex;flex-direction:column;gap:0.75rem}
+.skill-group{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.15rem}
+.skill-group-title{font-size:0.68rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:0.65rem}
+.skill-tags{display:flex;flex-wrap:wrap;gap:0.4rem}
+.tag{background:var(--bg3);color:var(--text2);font-size:0.77rem;padding:0.22rem 0.6rem;border-radius:4px;border:1px solid var(--border)}
+
+.achievements-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.1rem}
+.achievement-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.6rem;position:relative;overflow:hidden;transition:border-color 0.3s,transform 0.3s}
+.achievement-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--accent-dim) 0%,transparent 60%);opacity:0;transition:opacity 0.3s}
+.achievement-card:hover{border-color:rgba(0,229,192,0.25);transform:translateY(-2px)}
+.achievement-card:hover::before{opacity:1}
+.ach-num{font-family:var(--font-head);font-size:2.4rem;font-weight:800;color:var(--accent);line-height:1;margin-bottom:0.4rem;position:relative}
+.ach-title{font-size:0.9rem;font-weight:500;color:var(--text);margin-bottom:0.4rem;position:relative}
+.ach-desc{font-size:0.82rem;color:var(--text2);line-height:1.65;position:relative;font-weight:300}
+
+.projects-grid{display:flex;flex-direction:column;gap:1.25rem}
+.project-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.75rem;display:grid;grid-template-columns:1fr auto;gap:1.5rem;align-items:start;transition:border-color 0.3s,transform 0.3s;position:relative;overflow:hidden}
+.project-card::after{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);border-radius:3px 0 0 3px;transform:scaleY(0);transition:transform 0.3s;transform-origin:bottom}
+.project-card:hover{border-color:rgba(0,229,192,0.2);transform:translateX(3px)}
+.project-card:hover::after{transform:scaleY(1)}
+.project-header{display:flex;align-items:center;gap:0.7rem;margin-bottom:0.8rem}
+.project-icon{width:34px;height:34px;background:var(--accent-dim2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.project-icon svg{width:16px;height:16px;color:var(--accent)}
+.project-name{font-family:var(--font-head);font-size:1.05rem;font-weight:700;color:var(--text)}
+.project-company{font-size:0.77rem;color:var(--text3);margin-top:0.1rem}
+.project-desc-list{list-style:none;margin-bottom:1rem;display:flex;flex-direction:column;gap:0.45rem}
+.project-desc-list li{display:flex;align-items:flex-start;gap:0.6rem;color:var(--text2);font-size:0.875rem;line-height:1.65;font-weight:300}
+.project-desc-list li::before{content:'';width:5px;height:5px;background:var(--accent);border-radius:50%;flex-shrink:0;margin-top:0.55rem}
+.project-outcomes{display:flex;flex-wrap:wrap;gap:0.45rem;margin-bottom:0.9rem}
+.outcome{background:var(--accent-dim);color:var(--accent);font-size:0.75rem;padding:0.2rem 0.6rem;border-radius:4px;font-weight:500}
+.project-tools{display:flex;flex-wrap:wrap;gap:0.35rem}
+.tool-tag{background:var(--bg3);color:var(--text3);font-size:0.72rem;padding:0.18rem 0.5rem;border-radius:4px;border:1px solid var(--border)}
+.project-meta{text-align:right;min-width:110px}
+.project-year{font-size:0.78rem;color:var(--text3);margin-bottom:0.45rem}
+.project-type{font-size:0.72rem;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--accent);background:var(--accent-dim);padding:0.22rem 0.55rem;border-radius:4px;display:inline-block}
+
+.contact-wrap{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+.contact-info-text{color:var(--text2);line-height:1.85;margin-bottom:1.75rem;font-weight:300;font-size:0.95rem}
+.contact-items{display:flex;flex-direction:column;gap:0.85rem}
+.contact-item{display:flex;align-items:center;gap:1rem;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:0.9rem 1.1rem;text-decoration:none;color:var(--text);transition:all 0.2s}
+.contact-item:hover{border-color:rgba(0,229,192,0.3);color:var(--accent)}
+.contact-item-icon{width:34px;height:34px;background:var(--accent-dim);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.contact-item-icon svg{width:15px;height:15px;color:var(--accent)}
+.contact-item-label{font-size:0.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.1rem}
+.contact-item-value{font-size:0.875rem}
+.contact-form{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.75rem}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.85rem;margin-bottom:0.85rem}
+.form-group{display:flex;flex-direction:column;gap:0.35rem;margin-bottom:0.85rem}
+.form-group label{font-size:0.78rem;color:var(--text2);letter-spacing:0.03em}
+.form-group input,.form-group textarea{background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:0.65rem 0.85rem;font-family:var(--font-body);font-size:0.875rem;outline:none;transition:border-color 0.2s;resize:none;width:100%}
+.form-group input:focus,.form-group textarea:focus{border-color:rgba(0,229,192,0.4)}
+.form-group input::placeholder,.form-group textarea::placeholder{color:var(--text3)}
+.form-submit{width:100%;background:var(--accent);color:var(--bg);border:none;padding:0.75rem;border-radius:7px;font-family:var(--font-head);font-size:0.9rem;font-weight:700;cursor:pointer;transition:all 0.2s;letter-spacing:0.02em}
+.form-submit:hover{background:var(--accent2);transform:translateY(-1px)}
+
+/* CERTIFICATIONS CAROUSEL */
+.carousel-wrap{position:relative;width:100%;max-width:560px;margin:0 auto}
+.carousel-track-outer{overflow:hidden;border-radius:16px;width:100%}
+.carousel-track{display:flex;transition:transform 0.55s cubic-bezier(0.16,1,0.3,1);will-change:transform}
+.carousel-slide{min-width:100%;display:flex;flex-direction:column;align-items:center;gap:1.25rem;padding:0 0.25rem}
+.cert-img-frame{width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;position:relative}
+.cert-img-frame img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s ease}
+.cert-img-frame:hover img{transform:scale(1.02)}
+.cert-img-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.75rem;width:100%;height:100%;padding:2rem}
+.cert-img-placeholder svg{width:36px;height:36px;opacity:0.25;color:var(--accent)}
+.cert-img-placeholder-text{font-size:0.78rem;color:var(--text3);text-align:center;line-height:1.5}
+.cert-img-placeholder-text strong{display:block;color:var(--text2);font-size:0.8rem;margin-bottom:0.25rem}
+.cert-img-upload{position:absolute;bottom:0.75rem;right:0.75rem;background:rgba(8,11,18,0.85);border:1px solid var(--border2);color:var(--text2);font-size:0.7rem;padding:0.3rem 0.65rem;border-radius:5px;cursor:pointer;transition:all 0.2s;backdrop-filter:blur(8px)}
+.cert-img-upload:hover{border-color:var(--accent);color:var(--accent)}
+.cert-slide-info{text-align:center;padding-bottom:0.5rem}
+.cert-slide-name{font-family:var(--font-head);font-size:1rem;font-weight:700;color:var(--text);margin-bottom:0.3rem}
+.cert-slide-issuer{font-size:0.82rem;color:var(--text3)}
+.carousel-controls{display:flex;align-items:center;justify-content:center;gap:1.25rem;margin-top:1.75rem}
+.carousel-btn{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s;flex-shrink:0}
+.carousel-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.carousel-btn svg{width:16px;height:16px}
+.carousel-dots{display:flex;gap:0.5rem;align-items:center}
+.carousel-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);border:none;cursor:pointer;padding:0;transition:all 0.3s}
+.carousel-dot.active{background:var(--accent);transform:scale(1.3)}
+.cert-count{font-size:0.75rem;color:var(--text3);font-family:var(--font-head);letter-spacing:0.06em;min-width:36px;text-align:center}
+.cert-count span{color:var(--accent)}
+footer p{color:var(--text3);font-size:0.82rem}
+footer span{color:var(--accent)}
+
+.fade-in{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:768px){
+  .nav-links{display:none}
+  .nav-mobile-menu{display:flex}
+  .hero{padding:100px 1.25rem 60px}
+  section{padding:60px 1.25rem}
+  h1{font-size:clamp(1.3rem,6vw,1.9rem)}
+  .about-grid,.contact-wrap{grid-template-columns:1fr}
+  .achievements-grid{grid-template-columns:1fr}
+  .project-card{grid-template-columns:1fr}
+  .project-meta{text-align:left;display:flex;gap:0.75rem;align-items:center}
+  .form-row{grid-template-columns:1fr}
+  .hero-stats{gap:1.5rem}
+  .profile-image-wrap{width:110px;height:110px}
+  .about-links{justify-content:center}
+}
+@media(max-width:480px){
+  .hero-stats{gap:1.25rem}
+  .hero-stats > div{min-width:calc(50% - 0.75rem)}
+  .achievements-grid{grid-template-columns:1fr}
+  .project-card{padding:1.25rem}
+  .contact-form{padding:1.25rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">JH</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#certifications">Certifications</a></li>
+    <li><a href="#achievements">Impact</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="https://www.linkedin.com/in/jawad-hussain-0322ba186/" target="_blank" class="nav-cta">Hire Me</a>
+  <div class="nav-mobile-menu" id="menuBtn" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+  <a href="#about" onclick="toggleMenu()">About</a>
+  <a href="#certifications" onclick="toggleMenu()">Certifications</a>
+  <a href="#achievements" onclick="toggleMenu()">Impact</a>
+  <a href="#projects" onclick="toggleMenu()">Projects</a>
+  <a href="#contact" onclick="toggleMenu()">Contact</a>
+  <a href="https://www.linkedin.com/in/jawad-hussain-0322ba186/" target="_blank">Hire Me →</a>
+</div>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="transition-overlay" id="overlay"></div>
+
+<div class="dot-nav" id="dotNav">
+  <button class="dot-nav-item active" data-target="home" data-label="Home"></button>
+  <button class="dot-nav-item" data-target="about" data-label="About"></button>
+  <button class="dot-nav-item" data-target="certifications" data-label="Certifications"></button>
+  <button class="dot-nav-item" data-target="achievements" data-label="Impact"></button>
+  <button class="dot-nav-item" data-target="projects" data-label="Projects"></button>
+  <button class="dot-nav-item" data-target="contact" data-label="Contact"></button>
+  <div class="section-counter"><span id="counterCurrent">01</span> / 06</div>
+</div>
+
+<section class="hero snap-section" id="home">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-inner fade-in">
+    <div class="profile-image-wrap" onclick="document.getElementById('profileInput').click()">
+      <img class="profile-img" id="profileImg" src="" alt="Jawad Hussain" style="display:none">
+      <div class="profile-placeholder" id="profilePlaceholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Add your photo</span>
+      </div>
+      <div class="profile-upload-hint"><span>Change</span></div>
+    </div>
+    <input type="file" id="profileInput" accept="image/*" style="display:none" onchange="loadProfileImage(event)">
+    <div class="hero-badge">Available for opportunities</div>
+    <h1>
+      <span class="h1-name">Jawad Hussain</span>
+      <span class="h1-role">BI &amp; Reporting Analyst</span>
+    </h1>
+    <p class="hero-sub">I turn messy operational data into clean dashboards, forecasts, and decisions. From ERPNext governance to Power BI executive reporting — I own the full data stack.</p>
+    <div class="hero-actions">
+      <a href="#projects" class="btn-primary">View My Work →</a>
+      <a href="#contact" class="btn-secondary">Get In Touch</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">3×</div>
+        <div class="stat-label">Revenue Growth</div>
+      </div>
+      <div>
+        <div class="stat-num">29%</div>
+        <div class="stat-label">Engagement Lift</div>
+      </div>
+      <div>
+        <div class="stat-num">69%</div>
+        <div class="stat-label">Margin Improvement</div>
+      </div>
+      <div>
+        <div class="stat-num">170m</div>
+        <div class="stat-label">Reporting Time Saved</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint" id="scrollHint">
+    <span>scroll</span>
+    <div class="scroll-hint-arrow"></div>
+  </div>
+</section>
+
+<section id="about" class="snap-section">
+  <div class="section-inner">
+    <p class="section-label fade-in">About Me</p>
+    <h2 class="section-title fade-in">Data analyst with an engineer's discipline</h2>
+    <div class="about-grid">
+      <div class="fade-in">
+        <p class="about-intro">BI &amp; Reporting Analyst based in <strong>Islamabad, Pakistan</strong>. Currently at <strong>Bakhabar Kissan (BKK)</strong> as Data &amp; Systems Specialist — 2.5 years owning the full data pipeline from ERPNext to executive Power BI dashboards.</p>
+        <div class="about-facts">
+          <div class="about-fact"><span class="about-fact-dot"></span><span>B.Eng. Civil Engineering — NUST Islamabad</span></div>
+          <div class="about-fact"><span class="about-fact-dot"></span><span>IBM Data Analyst Specialization · Google Data Analytics</span></div>
+          <div class="about-fact"><span class="about-fact-dot"></span><span>Strongest in KPI reporting, variance analysis &amp; data governance</span></div>
+          <div class="about-fact"><span class="about-fact-dot"></span><span>Open to roles in Islamabad/Rawalpindi or remote</span></div>
+        </div>
+        <div class="about-links">
+          <a href="https://www.linkedin.com/in/jawad-hussain-0322ba186/" target="_blank" class="about-link">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+            LinkedIn
+          </a>
+          <a href="mailto:jawadbalti98@gmail.com" class="about-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 01-2.06 0L2 7"/></svg>
+            Email
+          </a>
+          <a href="tel:+923020534684" class="about-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.22 2.18 2 2 0 012.22 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.56-.56a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            +92 302 0534 684
+          </a>
+        </div>
+      </div>
+      <div class="skills-block fade-in">
+        <div class="skill-group">
+          <div class="skill-group-title">BI &amp; Reporting</div>
+          <div class="skill-tags">
+            <span class="tag">Power BI</span><span class="tag">DAX</span><span class="tag">Power Query</span><span class="tag">Tableau</span><span class="tag">KPI Dashboards</span><span class="tag">RLS</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title">Data &amp; Analytics</div>
+          <div class="skill-tags">
+            <span class="tag">SQL</span><span class="tag">Python</span><span class="tag">Pandas</span><span class="tag">RFM Analysis</span><span class="tag">Forecasting</span><span class="tag">Excel</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title">Systems &amp; Ops</div>
+          <div class="skill-tags">
+            <span class="tag">ERPNext</span><span class="tag">Data Governance</span><span class="tag">ETL</span><span class="tag">Azure</span><span class="tag">Git</span>
+          </div>
+        </div>
+        <div class="skill-group">
+          <div class="skill-group-title">Business Domains</div>
+          <div class="skill-tags">
+            <span class="tag">Sales Analytics</span><span class="tag">Inventory</span><span class="tag">Finance</span><span class="tag">Procurement</span><span class="tag">E-commerce</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="certifications" class="snap-section">
+  <div class="section-inner">
+    <p class="section-label fade-in">Credentials</p>
+    <h2 class="section-title fade-in">Certifications</h2>
+    <p class="section-sub fade-in">Verified credentials from recognised institutions.</p>
+
+    <div class="carousel-wrap fade-in">
+      <div class="carousel-track-outer">
+        <div class="carousel-track" id="certTrack">
+
+          <!-- =============================
+               SLIDE 1 — IBM
+               To add your image: replace the placeholder div below with:
+               <img src="your-image.jpg" alt="IBM Certificate">
+               ============================= -->
+          <div class="carousel-slide">
+            <div class="cert-img-frame">
+              <img src="cert_ibm_data_analyst.jpg" alt="IBM Data Analyst Certificate" style="width:100%;height:100%;object-fit:cover;display:block">
+            </div>
+            <div class="cert-slide-info">
+              <div class="cert-slide-name">IBM Data Analyst Specialization</div>
+              <div class="cert-slide-issuer">IBM / Coursera</div>
+            </div>
+          </div>
+
+          <!-- =============================
+               SLIDE 2 — Google
+               ============================= -->
+          <div class="carousel-slide">
+            <div class="cert-img-frame">
+              <img src="cert_google_data_analytics.jpg" alt="Google Data Analytics Certificate" style="width:100%;height:100%;object-fit:cover;display:block">
+            </div>
+            <div class="cert-slide-info">
+              <div class="cert-slide-name">Google Data Analytics Certificate</div>
+              <div class="cert-slide-issuer">Google / Coursera</div>
+            </div>
+          </div>
+
+          <!-- =============================
+               SLIDE 3 — DataCamp
+               ============================= -->
+          <div class="carousel-slide">
+            <div class="cert-img-frame">
+              <img src="cert_datacamp_PBI.jpg" alt="DataCamp Power BI Certificate" style="width:100%;height:100%;object-fit:cover;display:block">
+            </div>
+            <div class="cert-slide-info">
+              <div class="cert-slide-name">Data Analyst in Power BI</div>
+              <div class="cert-slide-issuer">DataCamp</div>
+            </div>
+          </div>
+
+          <!-- =============================
+               TO ADD A NEW CERTIFICATION:
+               1. Copy a slide block above (from <div class="carousel-slide"> to </div>)
+               2. Paste it here before this comment
+               3. Change the id values (e.g. "cert4-img", "cert4-placeholder", "cert4-upload")
+               4. Update the name, issuer, and onchange function id
+               5. Update totalSlides in the script below from 3 to 4
+               ============================= -->
+
+        </div>
+      </div>
+
+      <div class="carousel-controls">
+        <button class="carousel-btn" id="certPrev" aria-label="Previous">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="carousel-dots" id="certDots"></div>
+        <div class="cert-count"><span id="certCurrent">1</span> / <span id="certTotal">3</span></div>
+        <button class="carousel-btn" id="certNext" aria-label="Next">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="achievements" class="snap-section" style="background:var(--bg2)">
+  <div class="section-inner">
+    <p class="section-label fade-in">Measurable Impact</p>
+    <h2 class="section-title fade-in">Numbers that speak for themselves</h2>
+    <p class="section-sub fade-in">Every metric below came from real work — not estimates. These are the outcomes of building proper reporting infrastructure and acting on what the data said.</p>
+    <div class="achievements-grid">
+      <div class="achievement-card fade-in">
+        <div class="ach-num">3×</div>
+        <div class="ach-title">Revenue &amp; Gross Margin Growth</div>
+        <div class="ach-desc">Contributed directly through forecasting, target vs. actual reporting, and data-driven strategy that shaped business decisions at BKK.</div>
+      </div>
+      <div class="achievement-card fade-in">
+        <div class="ach-num">29%</div>
+        <div class="ach-title">Increase in Customer Engagement</div>
+        <div class="ach-desc">Achieved by building RFM segmentation models and targeting customers based on digital personas — moving from generic campaigns to precision outreach.</div>
+      </div>
+      <div class="achievement-card fade-in">
+        <div class="ach-num">69%</div>
+        <div class="ach-title">E-commerce Margin &amp; Order Improvement</div>
+        <div class="ach-desc">RFM analysis identified high-value customer segments and optimised order targeting, directly improving margin per order and volume.</div>
+      </div>
+      <div class="achievement-card fade-in">
+        <div class="ach-num">170m</div>
+        <div class="ach-title">Reporting Cycle Time Saved</div>
+        <div class="ach-desc">Migrated field operations reporting from manual Excel to an automated SQL/Python pipeline — saving 170 minutes every reporting cycle.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="projects" class="free-section">
+  <div class="section-inner">
+    <p class="section-label fade-in">Selected Work</p>
+    <h2 class="section-title fade-in">Projects &amp; case studies</h2>
+    <p class="section-sub fade-in">Four projects that show how I work — from building governance frameworks to delivering executive-ready dashboards.</p>
+    <div class="projects-grid">
+
+      <div class="project-card fade-in">
+        <div>
+          <div class="project-header">
+            <div class="project-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            </div>
+            <div>
+              <div class="project-name">Power BI Executive Dashboards</div>
+              <div class="project-company">Bakhabar Kissan (BKK)</div>
+            </div>
+          </div>
+          <ul class="project-desc-list">
+              <li>Designed and deployed recurring executive dashboards for C-level leadership at BKK</li>
+              <li>Covered KPI tracking, target vs. actual performance, sales trends, and operational metrics</li>
+              <li>Implemented Row-Level Security (RLS) for role-based data access across departments</li>
+              <li>Maintained Windows + Linux VM gateway for live data refresh — rare depth for a BI Analyst role</li>
+            </ul>
+          <div class="project-outcomes">
+            <span class="outcome">C-level reporting</span>
+            <span class="outcome">RLS implemented</span>
+            <span class="outcome">Linux VM gateway</span>
+          </div>
+          <div class="project-tools">
+            <span class="tool-tag">Power BI</span><span class="tool-tag">DAX</span><span class="tool-tag">Power Query</span><span class="tool-tag">RLS</span><span class="tool-tag">SQL</span><span class="tool-tag">Linux Gateway</span>
+          </div>
+        </div>
+        <div class="project-meta">
+          <div class="project-year">2023 – Present</div>
+          <div class="project-type">BI Dashboard</div>
+        </div>
+      </div>
+
+      <div class="project-card fade-in">
+        <div>
+          <div class="project-header">
+            <div class="project-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+            <div>
+              <div class="project-name">RFM Customer Analysis</div>
+              <div class="project-company">Bakhabar Kissan (BKK)</div>
+            </div>
+          </div>
+          <ul class="project-desc-list">
+              <li>Built a full RFM (Recency, Frequency, Monetary) segmentation model to identify high-value customers</li>
+              <li>Mapped digital personas to customer clusters for precision-targeted campaigns</li>
+              <li>Drove a 29% lift in customer engagement through data-backed targeting strategy</li>
+              <li>Improved e-commerce margin and order performance by 69% via segment optimisation</li>
+            </ul>
+          <div class="project-outcomes">
+            <span class="outcome">+29% engagement</span>
+            <span class="outcome">+69% e-commerce margin</span>
+          </div>
+          <div class="project-tools">
+            <span class="tool-tag">Python</span><span class="tool-tag">Pandas</span><span class="tool-tag">SQL</span><span class="tool-tag">Power BI</span><span class="tool-tag">RFM Modelling</span><span class="tool-tag">Segmentation</span>
+          </div>
+        </div>
+        <div class="project-meta">
+          <div class="project-year">2024</div>
+          <div class="project-type">Customer Analytics</div>
+        </div>
+      </div>
+
+      <div class="project-card fade-in">
+        <div>
+          <div class="project-header">
+            <div class="project-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div>
+              <div class="project-name">ERPNext Implementation &amp; Governance</div>
+              <div class="project-company">Bakhabar Kissan (BKK)</div>
+            </div>
+          </div>
+          <ul class="project-desc-list">
+              <li>Took full ownership of ERPNext across Sales, Procurement, Inventory, and Finance modules</li>
+              <li>Designed controls: no-negative-stock rules, mandatory transactional flows, and role-based access</li>
+              <li>Built the data integrity foundation that made all downstream reporting trustworthy and audit-ready</li>
+              <li>Performed ongoing reconciliation, exception handling, and root cause analysis</li>
+            </ul>
+          <div class="project-outcomes">
+            <span class="outcome">Full ERP ownership</span>
+            <span class="outcome">4 modules governed</span>
+            <span class="outcome">Audit-ready data</span>
+          </div>
+          <div class="project-tools">
+            <span class="tool-tag">ERPNext</span><span class="tool-tag">SQL</span><span class="tool-tag">Data Governance</span><span class="tool-tag">Reconciliation</span><span class="tool-tag">RBAC</span>
+          </div>
+        </div>
+        <div class="project-meta">
+          <div class="project-year">2023 – Present</div>
+          <div class="project-type">ERP &amp; Governance</div>
+        </div>
+      </div>
+
+      <div class="project-card fade-in">
+        <div>
+          <div class="project-header">
+            <div class="project-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </div>
+            <div>
+              <div class="project-name">Mari Petroleum CSR Dashboard</div>
+              <div class="project-company">Mari Petroleum Company</div>
+            </div>
+          </div>
+          <ul class="project-desc-list">
+              <li>Designed and built a CSR tracking dashboard for Mari Petroleum Company</li>
+              <li>Monitored nutrition and BMI data for children across health programme areas</li>
+              <li>Gave stakeholders a clear visual view of health outcomes at population level</li>
+              <li>Enabled evidence-based reporting on the measurable impact of CSR investments</li>
+            </ul>
+          <div class="project-outcomes">
+            <span class="outcome">Health outcome tracking</span>
+            <span class="outcome">Population-level insights</span>
+          </div>
+          <div class="project-tools">
+            <span class="tool-tag">Power BI</span><span class="tool-tag">DAX</span><span class="tool-tag">Data Visualisation</span><span class="tool-tag">Stakeholder Reporting</span>
+          </div>
+        </div>
+        <div class="project-meta">
+          <div class="project-year">2024</div>
+          <div class="project-type">CSR Analytics</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section id="contact" class="snap-section" style="background:var(--bg2)">
+  <div class="section-inner">
+    <p class="section-label fade-in">Get In Touch</p>
+    <h2 class="section-title fade-in">Let's work together</h2>
+    <div class="contact-wrap">
+      <div class="fade-in">
+        <p class="contact-info-text">I'm open to BI Analyst, Reporting Analyst, and Power BI Developer roles — locally in Islamabad/Rawalpindi or remote. If you're looking for someone who can own the reporting stack end-to-end, let's talk.</p>
+        <div class="contact-items">
+          <a href="mailto:jawadbalti98@gmail.com" class="contact-item">
+            <div class="contact-item-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 01-2.06 0L2 7"/></svg>
+            </div>
+            <div>
+              <div class="contact-item-label">Email</div>
+              <div class="contact-item-value">jawadbalti98@gmail.com</div>
+            </div>
+          </a>
+          <a href="tel:+923020534684" class="contact-item">
+            <div class="contact-item-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.22 2.18 2 2 0 012.22 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.56-.56a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+            </div>
+            <div>
+              <div class="contact-item-label">Phone</div>
+              <div class="contact-item-value">+92 302 0534 684</div>
+            </div>
+          </a>
+          <a href="https://www.linkedin.com/in/jawad-hussain-0322ba186/" target="_blank" class="contact-item">
+            <div class="contact-item-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+            </div>
+            <div>
+              <div class="contact-item-label">LinkedIn</div>
+              <div class="contact-item-value">jawad-hussain-0322ba186</div>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="contact-form fade-in">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" placeholder="Your name">
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" placeholder="your@email.com">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Subject</label>
+          <input type="text" placeholder="What's this about?">
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea rows="5" placeholder="Tell me about the role or project..."></textarea>
+        </div>
+        <button class="form-submit" onclick="alert('Thanks for reaching out! Please send your message to jawadbalti98@gmail.com')">Send Message</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>Built by <span>Jawad Hussain</span> · BI &amp; Reporting Analyst · Islamabad, Pakistan</p>
+</footer>
+
+<script>
+const SECTIONS = ['home','about','certifications','achievements','projects','contact'];
+const dots = document.querySelectorAll('.dot-nav-item');
+const progressBar = document.getElementById('progressBar');
+const overlay = document.getElementById('overlay');
+const scrollHint = document.getElementById('scrollHint');
+const counterEl = document.getElementById('counterCurrent');
+const navLinks = document.querySelectorAll('.nav-links a');
+
+let currentSection = 0;
+let isScrolling = false;
+let scrollTimeout;
+let lastScrollY = 0;
+
+// --- PROGRESS BAR ---
+function updateProgress(){
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  progressBar.style.width = pct + '%';
+}
+
+// --- SCROLL HINT ---
+function updateScrollHint(){
+  if(window.scrollY > 80) scrollHint.classList.add('hidden');
+  else scrollHint.classList.remove('hidden');
+}
+
+// --- ACTIVE SECTION DETECTION ---
+function getActiveSection(){
+  let active = 0;
+  SECTIONS.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if(el){
+      const rect = el.getBoundingClientRect();
+      if(rect.top <= window.innerHeight * 0.45) active = i;
+    }
+  });
+  return active;
+}
+
+function updateUI(idx){
+  if(idx === currentSection) return;
+  currentSection = idx;
+
+  // dots
+  dots.forEach((d,i) => d.classList.toggle('active', i === idx));
+
+  // counter
+  counterEl.textContent = String(idx + 1).padStart(2,'0');
+
+  // nav links
+  navLinks.forEach(a => {
+    const href = a.getAttribute('href').replace('#','');
+    a.style.color = href === SECTIONS[idx] ? 'var(--accent)' : '';
+  });
+}
+
+// --- CUSTOM SMOOTH SCROLL (Option 4) ---
+function smoothScrollTo(targetY, duration){
+  const startY = window.scrollY;
+  const dist = targetY - startY;
+  let startTime = null;
+
+  function easeInOutQuart(t){
+    return t < 0.5 ? 8*t*t*t*t : 1 - 8*(--t)*t*t*t;
+  }
+
+  function step(timestamp){
+    if(!startTime) startTime = timestamp;
+    const elapsed = timestamp - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const ease = easeInOutQuart(progress);
+    window.scrollTo(0, startY + dist * ease);
+    if(progress < 1) requestAnimationFrame(step);
+    else isScrolling = false;
+  }
+  requestAnimationFrame(step);
+}
+
+function scrollToSection(idx){
+  if(isScrolling) return;
+  const el = document.getElementById(SECTIONS[idx]);
+  if(!el) return;
+  isScrolling = true;
+
+  // Flash overlay
+  overlay.classList.add('flash');
+  setTimeout(() => overlay.classList.remove('flash'), 280);
+
+  smoothScrollTo(el.offsetTop, 900);
+  updateUI(idx);
+}
+
+// --- DOT NAV CLICKS ---
+dots.forEach((btn, i) => {
+  btn.addEventListener('click', () => scrollToSection(i));
+});
+
+// --- NAV LINK CLICKS ---
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const id = a.getAttribute('href').replace('#','');
+    const idx = SECTIONS.indexOf(id);
+    if(idx >= 0) scrollToSection(idx);
+  });
+});
+
+// --- FREE-SCROLL SECTIONS (taller than viewport) ---
+const FREE_SCROLL_SECTIONS = ['projects'];
+
+function isTallSection(idx){
+  return FREE_SCROLL_SECTIONS.includes(SECTIONS[idx]);
+}
+
+function isAtSectionBottom(idx){
+  const el = document.getElementById(SECTIONS[idx]);
+  if(!el) return true;
+  const bottom = el.offsetTop + el.offsetHeight;
+  return window.scrollY + window.innerHeight >= bottom - 10;
+}
+
+function isAtSectionTop(idx){
+  const el = document.getElementById(SECTIONS[idx]);
+  if(!el) return true;
+  return window.scrollY <= el.offsetTop + 10;
+}
+
+// --- WHEEL SNAP ---
+let wheelDelta = 0;
+let wheelTimer;
+window.addEventListener('wheel', e => {
+  if(isScrolling) return;
+
+  // Inside a tall section scrolling down — let it scroll naturally until bottom
+  if(isTallSection(currentSection)){
+    if(e.deltaY > 0 && !isAtSectionBottom(currentSection)) return;
+    if(e.deltaY < 0 && !isAtSectionTop(currentSection)) return;
+  }
+
+  wheelDelta += e.deltaY;
+  clearTimeout(wheelTimer);
+  wheelTimer = setTimeout(() => {
+    if(Math.abs(wheelDelta) > 30){
+      if(wheelDelta > 0 && currentSection < SECTIONS.length - 1) scrollToSection(currentSection + 1);
+      else if(wheelDelta < 0 && currentSection > 0) scrollToSection(currentSection - 1);
+    }
+    wheelDelta = 0;
+  }, 50);
+}, {passive:true});
+
+// --- TOUCH SWIPE ---
+let touchStartY = 0;
+window.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, {passive:true});
+window.addEventListener('touchend', e => {
+  if(isScrolling) return;
+  const diff = touchStartY - e.changedTouches[0].clientY;
+  if(Math.abs(diff) > 60){
+    if(isTallSection(currentSection)){
+      if(diff > 0 && !isAtSectionBottom(currentSection)) return;
+      if(diff < 0 && !isAtSectionTop(currentSection)) return;
+    }
+    if(diff > 0 && currentSection < SECTIONS.length - 1) scrollToSection(currentSection + 1);
+    else if(diff < 0 && currentSection > 0) scrollToSection(currentSection - 1);
+  }
+}, {passive:true});
+
+// --- KEYBOARD NAV ---
+document.addEventListener('keydown', e => {
+  if(e.key === 'ArrowDown' || e.key === 'PageDown'){
+    if(isTallSection(currentSection) && !isAtSectionBottom(currentSection)) return;
+    e.preventDefault();
+    if(currentSection < SECTIONS.length - 1) scrollToSection(currentSection + 1);
+  }
+  if(e.key === 'ArrowUp' || e.key === 'PageUp'){
+    if(isTallSection(currentSection) && !isAtSectionTop(currentSection)) return;
+    e.preventDefault();
+    if(currentSection > 0) scrollToSection(currentSection - 1);
+  }
+});
+
+// --- SCROLL EVENT (for progress + hint + fallback UI sync) ---
+window.addEventListener('scroll', () => {
+  updateProgress();
+  updateScrollHint();
+  clearTimeout(scrollTimeout);
+  scrollTimeout = setTimeout(() => {
+    updateUI(getActiveSection());
+  }, 80);
+}, {passive:true});
+
+// --- CONTENT REVEAL ---
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      e.target.classList.remove('exit');
+    } else if(e.boundingClientRect.top < 0){
+      e.target.classList.add('exit');
+    }
+  });
+},{threshold:0.08});
+document.querySelectorAll('.fade-in').forEach((el, i) => {
+  el.style.transitionDelay = (i % 5) * 0.07 + 's';
+  revealObs.observe(el);
+});
+
+// --- MOBILE MENU ---
+function toggleMenu(){
+  document.getElementById('mobileNav').classList.toggle('open');
+}
+
+// --- PROFILE IMAGE ---
+function loadProfileImage(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = document.getElementById('profileImg');
+    const ph = document.getElementById('profilePlaceholder');
+    img.src = ev.target.result;
+    img.style.display = 'block';
+    ph.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+// Init
+updateProgress();
+(function(){
+  const track = document.getElementById('certTrack');
+  const dotsWrap = document.getElementById('certDots');
+  const currentEl = document.getElementById('certCurrent');
+  const totalEl = document.getElementById('certTotal');
+  const prevBtn = document.getElementById('certPrev');
+  const nextBtn = document.getElementById('certNext');
+
+  const totalSlides = 3; // UPDATE THIS when adding new certs
+  let current = 0;
+  let touchStartX = 0;
+
+  totalEl.textContent = totalSlides;
+
+  // Build dots
+  for(let i = 0; i < totalSlides; i++){
+    const d = document.createElement('button');
+    d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsWrap.appendChild(d);
+  }
+
+  function goTo(idx){
+    current = (idx + totalSlides) % totalSlides;
+    track.style.transform = `translateX(-${current * 100}%)`;
+    document.querySelectorAll('.carousel-dot').forEach((d,i) => d.classList.toggle('active', i === current));
+    currentEl.textContent = current + 1;
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  // Swipe support
+  track.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, {passive:true});
+  track.addEventListener('touchend', e => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if(Math.abs(diff) > 40){
+      if(diff > 0) goTo(current + 1);
+      else goTo(current - 1);
+    }
+  }, {passive:true});
+
+  // Keyboard left/right when in certs section
+  document.addEventListener('keydown', e => {
+    if(document.getElementById('certifications').getBoundingClientRect().top > -100 &&
+       document.getElementById('certifications').getBoundingClientRect().top < window.innerHeight){
+      if(e.key === 'ArrowRight') goTo(current + 1);
+      if(e.key === 'ArrowLeft') goTo(current - 1);
+    }
+  });
+})();
+
+// --- CERT IMAGE UPLOAD ---
+function loadCertImage(e, imgId, placeholderId){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = document.getElementById(imgId);
+    const ph = document.getElementById(placeholderId);
+    img.src = ev.target.result;
+    img.style.display = 'block';
+    ph.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+</script>
+</body>
+</html>
